@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeGenius</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <!-- CodeMirror -->
+    <link rel="stylesheet" href="codemirror-5.65.18/lib/codemirror.css">
+    <script src="codemirror-5.65.18/lib/codemirror.js"></script>
+    <script src="codemirror-5.65.18/mode/python/python.js"></script>
+    <script src="codemirror-5.65.18/mode/clike/clike.js"></script>
+    <script src="codemirror-5.65.18/addon/edit/closebrackets.js"></script>
+    <link rel="stylesheet" href="codemirror-5.65.18/theme/dracula.css">
+    <link rel="stylesheet" href="codemirror-5.65.18/theme/material-darker.css">
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 9px;
+        }
+
+        .header {
+            background: #1f1f1f;
+            padding: 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .sidebar {
+    width: 250px;
+    background: #1f1f1f;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    display: none; /* Hide sidebar initially */
+}
+
+
+
+.editor {
+    flex-grow: 1;
+    background: #282a36;
+    border-radius: 8px;
+    padding: 8px;
+    min-width: 600px;
+    transition: width 0.3s ease-in-out; /* Smooth transition */
+}
+
+
+        .sidebar h2 {
+            text-align: center;
+        }
+
+        .files-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .files-list li {
+            background: #333c44;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+
+        /* .editor {
+            flex-grow: 1;
+            background: #282a36;
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 600px;
+        } */
+
+        .io-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 300px;
+        }
+
+        .io-container textarea {
+            width: 100%;
+            height: 217px;
+            background: #1f1f1f;
+            color: white;
+            border: 1px solid #444;
+            padding: 10px;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .CodeMirror {
+            height: 500px;
+        }
+
+        .footer {
+            background: #1f1f1f;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .icon-button {
+            background: none;
+            border: none;
+           
+            font-size: 19px; /* Adjust size if needed */
+            cursor: pointer;
+         }
+
+        .icon-button:hover {
+            color: #f0ad4e; /* Change color on hover (optional) */
+        }
+
+
+ /* From Uiverse.io by TimTrayler */ 
+/* Toggle Switch Styling */
+.switch {
+  --secondary-container: #3a4b39;
+  --primary: #84da89;
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 3.7em;
+  height: 1.8em;
+}
+
+/* Hide default checkbox */
+.switch input {
+  display: none;
+}
+
+/* Outer slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #313033;
+  transition: background-color 0.3s ease-in-out;
+  border-radius: 30px;
+}
+
+/* Toggle knob */
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.4em;
+  width: 1.4em;
+  border-radius: 50%;
+  left: 0.2em;
+  bottom: 50%;
+  transform: translateY(50%); /* Ensures perfect vertical centering */
+  background-color: #aeaaae;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+/* Checked state */
+input:checked + .slider {
+  background-color: var(--secondary-container);
+}
+
+input:checked + .slider::before {
+  background-color: var(--primary);
+  transform: translate(1.9em, 50%); /* Smooth movement */
+}
+
+/* Focus effect */
+input:focus + .slider {
+  box-shadow: 0 0 4px var(--secondary-container);
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="header">
+    <h3><b>CodeGenius</b></h3>
+   
+    <div class="btn-container">
+        <button id="toggleSidebar" class="icon-button">
+            <p class="fas fa-folder">📂</p> <!-- Saved Files Icon -->
+        </button>
+        <input type="text" id="filename" value="untitled.cpp" class="form-control">
+        <button id="saveBtn" class="btn btn-primary">Save</button>
+        <input type="file" id="fileInput" style="display: none;">
+        <button id="importBtn" class="btn btn-success">Import</button>
+        <button id="exportBtn" class="btn btn-secondary">Export</button>
+       <!-- From Uiverse.io by TimTrayler --> 
+<label class="switch">
+    <input type="checkbox">
+    <span class="slider"></span>
+  </label>
+    </div>
+    <div class="btn-container">
+        <select class="form-select" id="languageSelect">
+            <option value="Cpp">C++</option>
+            <option value="Java">Java</option>
+            <option value="Python">Python</option>
+        </select>
+        <button id="runBtn" class="btn btn-warning">Run</button> 
+    </div>
+</div>
+
+
+    <div class="editor-container">
+        <div class="sidebar">
+            <h3><b>Saved Files</b></h3>
+            <ul id="files-list" class="files-list"></ul>
+        </div>
+        <div class="editor">
+            <textarea id="editor" placeholder="Write code here..."></textarea>
+        </div>
+        <div class="io-container">
+            <label for="input">Input:</label>
+            <textarea id="input"></textarea>
+            <label for="output">Output:</label>
+            <textarea id="output" readonly></textarea>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 CodeGenius 
+    </div>
+    
+
+    <script>
+        // Initialize CodeMirror
+        var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+            mode: "text/x-c++src",  // Set default mode
+            theme: "material-darker",  // Use the correct dark theme
+            lineNumbers: true,  // Show line numbers in a separate column
+            styleActiveLine: true,  // Highlight the current active line
+            autoCloseBrackets: true,  // Auto-close brackets
+        });
+        editor.setSize("100%", "500px");
+    
+    
+        // Change language mode and update filename extension
+        document.getElementById("languageSelect").addEventListener("change", function () {
+            let lang = this.value;
+            let filenameInput = document.getElementById("filename");
+    
+            if (lang == "Java") {
+                editor.setOption("mode", "text/x-java");
+                filenameInput.value = filenameInput.value.replace(/\.\w+$/, ".java");
+            } else if (lang == "Python") {
+                editor.setOption("mode", "text/x-python");
+                filenameInput.value = filenameInput.value.replace(/\.\w+$/, ".py");
+            } else {
+                editor.setOption("mode", "text/x-c++src");
+                filenameInput.value = filenameInput.value.replace(/\.\w+$/, ".cpp");
+            }
+        });
+    
+        // Import Code
+        document.getElementById("importBtn").addEventListener("click", function () {
+            document.getElementById("fileInput").click();
+        });
+    
+        document.getElementById("fileInput").addEventListener("change", function (event) {
+            const file = event.target.files[0];
+    
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    editor.setValue(e.target.result);
+                    document.getElementById("filename").value = file.name;
+                };
+                reader.readAsText(file);
+            }
+        });
+    
+        // Export Code
+        document.getElementById("exportBtn").addEventListener("click", function () {
+            const fileContent = editor.getValue();
+            const fileName = document.getElementById("filename").value.trim() || "untitled.cpp";
+    
+            const blob = new Blob([fileContent], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+    
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        });
+    
+        // Run Code (Backend API Call)
+        document.getElementById("runBtn").addEventListener("click", async function () {
+            let codeData = {
+                code: editor.getValue(),
+                input: document.getElementById("input").value,
+                lang: document.getElementById("languageSelect").value
+            };
+    
+            let response = await fetch("http://localhost:8000/compile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(codeData)
+            });
+    
+            let data = await response.json();
+            document.getElementById("output").value = data.output;
+        });
+    
+        // Load saved files from localStorage on page load
+           document.addEventListener("DOMContentLoaded", function () {
+           const savedFiles = JSON.parse(localStorage.getItem("savedFiles")) || [];
+           const filesList = document.getElementById("files-list");
+
+           savedFiles.forEach(fileName => {
+           let listItem = document.createElement("li");
+           listItem.textContent = fileName;
+           filesList.appendChild(listItem);
+        });
+});
+
+// Save file to localStorage when "Save" button is clicked
+document.getElementById("saveBtn").addEventListener("click", function () {
+    let fileName = document.getElementById("filename").value.trim();
+    if (!fileName) return;
+
+    const savedFiles = JSON.parse(localStorage.getItem("savedFiles")) || [];
+    
+    // Avoid duplicates
+    if (!savedFiles.includes(fileName)) {
+        savedFiles.push(fileName);
+        localStorage.setItem("savedFiles", JSON.stringify(savedFiles));
+
+        let listItem = document.createElement("li");
+        listItem.textContent = fileName;
+        document.getElementById("files-list").appendChild(listItem);
+    }
+});
+
+//toggle sidebar
+document.getElementById("toggleSidebar").addEventListener("click", function () {
+        let sidebar = document.querySelector(".sidebar");
+        let editor = document.querySelector(".editor");
+
+        if (sidebar.style.display === "none" || sidebar.style.display === "") {
+            sidebar.style.display = "block"; // Show sidebar
+            editor.style.minWidth = "450px"; // Reduce editor width
+        } else {
+            sidebar.style.display = "none"; // Hide sidebar
+            editor.style.minWidth = "600px"; // Restore editor width
+        }
+    });
+
+
+    //theme toggle
+    document.addEventListener("DOMContentLoaded", function () {
+    const toggleSwitch = document.querySelector(".switch input");
+
+    // Function to apply the theme
+    function applyTheme(isLightMode) {
+    if (isLightMode) {
+        document.body.style.backgroundColor = "#ffffff"; // Light background
+        document.body.style.color = "#000000"; // Dark text
+
+        document.querySelector(".header").style.background = "#f0f0f0";
+        document.querySelector(".footer").style.background = "#f0f0f0";
+        document.querySelector(".footer").style.color = "#000000"; // Footer text black
+
+        document.querySelector(".editor").style.background = "#f8f9fa"; // Light editor
+        document.querySelector(".io-container textarea").style.background = "#ffffff";
+        document.querySelector(".io-container textarea").style.color = "#000000";
+
+        // Set output box color to match input box
+        document.getElementById("output").style.background = "#ffffff";
+        document.getElementById("output").style.color = "#000000";
+
+        // Apply theme to sidebar
+        document.querySelector(".sidebar").style.background = "#f0f0f0";
+        document.querySelector(".sidebar").style.color = "#000000";
+
+    } else {
+        document.body.style.backgroundColor = "#121212"; // Dark background
+        document.body.style.color = "white";
+
+        document.querySelector(".header").style.background = "#1f1f1f";
+        document.querySelector(".footer").style.background = "#1f1f1f";
+        document.querySelector(".footer").style.color = "white"; // Footer text white
+
+        document.querySelector(".editor").style.background = "#282a36"; // Dark editor
+        document.querySelector(".io-container textarea").style.background = "#1f1f1f";
+        document.querySelector(".io-container textarea").style.color = "white";
+
+        // Set output box color to match input box
+        document.getElementById("output").style.background = "#1f1f1f";
+        document.getElementById("output").style.color = "white";
+
+        // Apply theme to sidebar
+        document.querySelector(".sidebar").style.background = "#1f1f1f";
+        document.querySelector(".sidebar").style.color = "white";
+    }
+
+    // Store theme preference in localStorage
+    localStorage.setItem("theme", isLightMode ? "light" : "dark");
+}
+
+    
+
+    // Event listener for toggle switch
+    toggleSwitch.addEventListener("change", function () {
+        applyTheme(this.checked);
+    });
+
+    // Load theme from localStorage on page load
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+        toggleSwitch.checked = true;
+        applyTheme(true);
+    }
+});
+
+
+    </script>
+    
+    
+    <script src='https://cdn.jotfor.ms/s/umd/latest/for-embedded-agent.js'></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", function() {
+        window.AgentInitializer.init({
+          agentRenderURL: "https://agent.jotform.com/01953c88b4b47687850aea296274c3ac3939",
+          rootId: "JotformAgent-01953c88b4b47687850aea296274c3ac3939",
+          formID: "01953c88b4b47687850aea296274c3ac3939",
+          queryParams: ["skipWelcome=1", "maximizable=1"],
+          domain: "https://www.jotform.com",
+          isDraggable: false,
+          background: "linear-gradient(180deg, #424757 0%, #424757 100%)",
+          buttonBackgroundColor: "#11111B",
+          buttonIconColor: "#FFF",
+          variant: false,
+          customizations: {
+            "greeting": "Yes",
+            "greetingMessage": "Hi! How can I assist you?",
+            "pulse": "Yes",
+            "position": "right"
+          },
+          isVoice: undefined
+        });
+      });
+    </script>
+   
+</body>
+
+</html>

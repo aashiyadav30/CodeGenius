@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeGenius</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .hero {
+            padding: 60px 20px;
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            background-color: #0066ff;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+        }
+        .editor-container {
+            width: 80%;
+            margin: 40px auto;
+            background: #161b22;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .code-editor {
+            width: 100%;
+            height: 400px;
+            background: #282a36;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 16px;
+            resize: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><h3><b><b>CodeGenius</b></b></h3></a>
+            <div>
+                <a href="#" class="text-white mx-3" style="text-decoration: none;">New Project</a>
+                <a href="#" class="text-white mx-3" style="text-decoration: none;">Projects</a>
+                <a href="aboutme.html" class="text-white mx-3" style="text-decoration: none;">About Me</a>
+                <a href="#" class="text-white mx-3" style="text-decoration: none;">Source Code</a>
+            </div>
+        </div>
+    </nav>
+    <div class="hero">
+        <h1>Write & execute code in your browser</h1>
+        <p>A project powered by Django, Next.js, Tailwind, Docker, and more.</p>
+        <button id="createProjectBtn" class="btn btn-primary">Create Project</button>
+    </div>
+    <div class="editor-container">
+        <textarea class="code-editor"># Write your code here...</textarea>
+    </div>
+
+    <script>
+        document.getElementById("createProjectBtn").addEventListener("click", function () {
+          window.location.href = "index.html"; // Open index.html
+        });
+      </script>
+</body>
+</html>
